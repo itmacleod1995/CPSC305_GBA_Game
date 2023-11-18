@@ -15,9 +15,14 @@
 /* include the tile map we are using */
 #include "map.h"
 
+/* Background for parallax effect */
+#include "map2.h"
+
+
 /* the tile mode flags needed for display control register */
 #define MODE0 0x00
 #define BG0_ENABLE 0x100
+#define BG1_ENABLE 0x200 //enable second backgroung to be on
 
 /* flags to set sprite handling in display control register */
 #define SPRITE_MAP_2D 0x0
@@ -27,6 +32,8 @@
 
 /* the control registers for the four tile layers */
 volatile unsigned short* bg0_control = (volatile unsigned short*) 0x4000008;
+volatile unsigned short* bg1_control = (volatile unsigned short*) 0x400000a;
+
 
 /* palette is always 256 colors */
 #define PALETTE_SIZE 256
@@ -55,6 +62,9 @@ volatile unsigned short* buttons = (volatile unsigned short*) 0x04000130;
 /* scrolling registers for backgrounds */
 volatile short* bg0_x_scroll = (unsigned short*) 0x4000010;
 volatile short* bg0_y_scroll = (unsigned short*) 0x4000012;
+volatile short* bg1_x_scroll = (unsigned short*) 0x4000014;
+
+
 
 /* the bit positions indicate each button - the first bit is for A, second for
  * B, and so on, each constant below can be ANDED into the register to get the
@@ -147,8 +157,19 @@ void setup_background() {
         (1 << 13) |       /* wrapping flag */
         (0 << 14);        /* bg size, 0 is 256x256 */
 
+
+    *bg1_control = 1 |
+        (0 << 2) |
+        (0 << 6) |
+        (1 << 7) |
+        (24 << 8) |
+        (1 << 13) |
+        (0 << 14);
+
     /* load the tile data into screen block 16 */
     memcpy16_dma((unsigned short*) screen_block(16), (unsigned short*) map, map_width * map_height);
+
+    memcpy16_dma((unsigned short*) screen_block(24), (unsigned short*) map2, map2_width * map2_height);
 }
 
 /* just kill time */
@@ -522,7 +543,7 @@ void koopa_update(struct Koopa* koopa, int xscroll) {
 /* the main function */
 int main() {
     /* we set the mode to mode 0 with bg0 on */
-    *display_control = MODE0 | BG0_ENABLE | SPRITE_ENABLE | SPRITE_MAP_1D;
+    *display_control = MODE0 | BG0_ENABLE | BG1_ENABLE | SPRITE_ENABLE | SPRITE_MAP_1D;
 
     /* setup the background 0 */
     setup_background();
@@ -566,6 +587,7 @@ int main() {
         /* wait for vblank before scrolling and moving sprites */
         wait_vblank();
         *bg0_x_scroll = xscroll;
+        *bg1_x_scroll = xscroll * 1.5;
         sprite_update_all();
 
         /* delay some */
