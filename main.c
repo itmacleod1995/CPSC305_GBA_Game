@@ -568,9 +568,14 @@ int main() {
 
         /* now the arrow keys move the koopa */
         if (button_pressed(BUTTON_RIGHT)) {
+            /**
             if (koopa_right(&koopa)) {
                 xscroll++;
             }
+            */
+            
+            xscroll++;
+    
         } else if (button_pressed(BUTTON_LEFT)) {
             if (koopa_left(&koopa)) {
                 xscroll--;
