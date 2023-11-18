@@ -157,7 +157,7 @@ void setup_background() {
         (1 << 13) |       /* wrapping flag */
         (0 << 14);        /* bg size, 0 is 256x256 */
 
-
+    /* Background setup for parallax */
     *bg1_control = 1 |
         (0 << 2) |
         (0 << 6) |
@@ -168,7 +168,8 @@ void setup_background() {
 
     /* load the tile data into screen block 16 */
     memcpy16_dma((unsigned short*) screen_block(16), (unsigned short*) map, map_width * map_height);
-
+    
+    /* Load map2 into screen block 24 */
     memcpy16_dma((unsigned short*) screen_block(24), (unsigned short*) map2, map2_width * map2_height);
 }
 
