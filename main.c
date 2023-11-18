@@ -519,7 +519,7 @@ void koopa_update(struct Koopa* koopa, int xscroll) {
 
     } else {
         /* he is falling now */
-        koopa->falling = 1;
+        //koopa->falling = 1;
     }
 
 
@@ -555,8 +555,8 @@ int main() {
     sprite_clear();
 
     /* create the koopa */
-    struct Koopa koopa;
-    koopa_init(&koopa);
+    //struct Koopa koopa;
+    //koopa_init(&koopa);
 
     /* set initial scroll to 0 */
     int xscroll = 0;
@@ -564,7 +564,7 @@ int main() {
     /* loop forever */
     while (1) {
         /* update the koopa */
-        koopa_update(&koopa, xscroll);
+        //koopa_update(&koopa, xscroll);
 
         /* now the arrow keys move the koopa */
         if (button_pressed(BUTTON_RIGHT)) {
@@ -577,17 +577,21 @@ int main() {
             xscroll++;
     
         } else if (button_pressed(BUTTON_LEFT)) {
+            /**
             if (koopa_left(&koopa)) {
                 xscroll--;
             }
+            */
         } else {
-            koopa_stop(&koopa);
+            //koopa_stop(&koopa);
         }
 
         /* check for jumping */
+        /**
         if (button_pressed(BUTTON_A)) {
             koopa_jump(&koopa);
         }
+        */
 
         /* wait for vblank before scrolling and moving sprites */
         wait_vblank();
