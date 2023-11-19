@@ -18,7 +18,6 @@
 /* Background for parallax effect */
 #include "map2.h"
 
-
 /* the tile mode flags needed for display control register */
 #define MODE0 0x00
 #define BG0_ENABLE 0x100
@@ -390,43 +389,44 @@ void koopa_init(struct Koopa* koopa) {
     koopa->sprite = sprite_init(koopa->x, koopa->y, SIZE_16_32, 0, 0, koopa->frame, 0);
 }
 
-/* move the koopa left or right returns if it is at edge of the screen */
+//  move the koopa left or right returns if it is at edge of the screen 
 int koopa_left(struct Koopa* koopa) {
-    /* face left */
+    // face left 
     sprite_set_horizontal_flip(koopa->sprite, 1);
     koopa->move = 1;
 
-    /* if we are at the left end, just scroll the screen */
+    // if we are at the left end, just scroll the screen 
     if (koopa->x < koopa->border) {
         return 1;
     } else {
-        /* else move left */
+        // else move left 
         koopa->x--;
         return 0;
     }
 }
 int koopa_right(struct Koopa* koopa) {
-    /* face right */
+    // face right 
     sprite_set_horizontal_flip(koopa->sprite, 0);
     koopa->move = 1;
 
-    /* if we are at the right end, just scroll the screen */
+    // if we are at the right end, just scroll the screen
     if (koopa->x > (SCREEN_WIDTH - 16 - koopa->border)) {
         return 1;
     } else {
-        /* else move right */
+        // else move right 
         koopa->x++;
         return 0;
     }
 }
 
-/* stop the koopa from walking left/right */
+// stop the koopa from walking left/right 
 void koopa_stop(struct Koopa* koopa) {
     koopa->move = 0;
     koopa->frame = 0;
     koopa->counter = 7;
     sprite_set_offset(koopa->sprite, koopa->frame);
 }
+
 
 /* start the koopa jumping, unless already fgalling */
 void koopa_jump(struct Koopa* koopa) {
@@ -575,7 +575,7 @@ int main() {
             }
             */
             
-            xscroll++;
+            //xscroll++;
     
         } else if (button_pressed(BUTTON_LEFT)) {
             /**
@@ -586,7 +586,8 @@ int main() {
         } else {
             //koopa_stop(&koopa);
         }
-
+        
+        xscroll++;
         /* check for jumping */
         /**
         if (button_pressed(BUTTON_A)) {
