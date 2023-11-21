@@ -10,7 +10,7 @@
 #include "background.h"
 
 /* include the sprite image we are using */
-#include "koopa.h"
+//#include "koopa.h"
 
 /* include the tile map we are using */
 #include "map.h"
@@ -335,10 +335,10 @@ void sprite_set_offset(struct Sprite* sprite, int offset) {
 /* setup the sprite image and palette */
 void setup_sprite_image() {
     /* load the palette from the image into palette memory*/
-    memcpy16_dma((unsigned short*) sprite_palette, (unsigned short*) koopa_palette, PALETTE_SIZE);
+    //memcpy16_dma((unsigned short*) sprite_palette, (unsigned short*) koopa_palette, PALETTE_SIZE);
 
     /* load the image into sprite image memory */
-    memcpy16_dma((unsigned short*) sprite_image_memory, (unsigned short*) koopa_data, (koopa_width * koopa_height) / 2);
+    //memcpy16_dma((unsigned short*) sprite_image_memory, (unsigned short*) koopa_data, (koopa_width * koopa_height) / 2);
 }
 
 /* a struct for the koopa's logic and behavior */
@@ -354,12 +354,6 @@ struct Koopa {
 
     /* the koopa's y acceleration in 1/256 pixels/second^2 */
     int gravity; 
-
-    /* which frame of the animation he is on */
-    int frame;
-
-    /* the number of frames to wait before flipping */
-    int animation_delay;
 
     /* the animation counter counts how many frames until we flip */
     int counter;
@@ -380,61 +374,37 @@ void koopa_init(struct Koopa* koopa) {
     koopa->y = 113;
     koopa->yvel = 0;
     koopa->gravity = 50;
-    koopa->border = 40;
-    koopa->frame = 0;
     koopa->move = 0;
     koopa->counter = 0;
-    koopa->falling = 0;
-    koopa->animation_delay = 8;
-    koopa->sprite = sprite_init(koopa->x, koopa->y, SIZE_16_32, 0, 0, koopa->frame, 0);
+    koopa->sprite = sprite_init(koopa->x, koopa->y, SIZE_32_32, 0, 0, 0, 0);
 }
 
-//  move the koopa left or right returns if it is at edge of the screen 
-int koopa_left(struct Koopa* koopa) {
-    // face left 
-    sprite_set_horizontal_flip(koopa->sprite, 1);
-    koopa->move = 1;
-
-    // if we are at the left end, just scroll the screen 
-    if (koopa->x < koopa->border) {
-        return 1;
-    } else {
-        // else move left 
-        koopa->x--;
-        return 0;
-    }
-}
 int koopa_right(struct Koopa* koopa) {
     // face right 
-    sprite_set_horizontal_flip(koopa->sprite, 0);
     koopa->move = 1;
 
-    // if we are at the right end, just scroll the screen
-    if (koopa->x > (SCREEN_WIDTH - 16 - koopa->border)) {
-        return 1;
-    } else {
-        // else move right 
-        koopa->x++;
-        return 0;
-    }
+    koopa->x++;
+    return 0;
+    
+}
+
+int koopa_down(struct Koopa* koopa){
+    koopa->move = 1;
+    koopa->y--;
+    return 0;
+
 }
 
 // stop the koopa from walking left/right 
+
 void koopa_stop(struct Koopa* koopa) {
     koopa->move = 0;
-    koopa->frame = 0;
+    //koopa->frame = 0;
     koopa->counter = 7;
-    sprite_set_offset(koopa->sprite, koopa->frame);
+    //sprite_set_offset(koopa->sprite, koopa->frame);
 }
 
 
-/* start the koopa jumping, unless already fgalling */
-void koopa_jump(struct Koopa* koopa) {
-    if (!koopa->falling) {
-        koopa->yvel = -1350;
-        koopa->falling = 1;
-    }
-}
 
 /* finds which tile a screen coordinate maps to, taking scroll into acco  unt */
 unsigned short tile_lookup(int x, int y, int xscroll, int yscroll,
@@ -495,10 +465,12 @@ unsigned short tile_lookup(int x, int y, int xscroll, int yscroll,
 /* update the koopa */
 void koopa_update(struct Koopa* koopa, int xscroll) {
     /* update y position and speed if falling */
+    /*
     if (koopa->falling) {
         koopa->y += (koopa->yvel >> 8);
         koopa->yvel += koopa->gravity;
     }
+    */
 
     /* check which tile the koopa's feet are over */
     unsigned short tile = tile_lookup(koopa->x + 8, koopa->y + 32, xscroll, 0, map,
@@ -506,27 +478,26 @@ void koopa_update(struct Koopa* koopa, int xscroll) {
 
     /* if it's block tile
      * these numbers refer to the tile indices of the blocks the koopa can walk on */
+    /**
     if ((tile >= 1 && tile <= 6) || 
             (tile >= 12 && tile <= 17)) {
-        /* stop the fall! */
+        
         koopa->falling = 0;
         koopa->yvel = 0;
 
-        /* make him line up with the top of a block works by clearing out the lower bits to 0 */
         koopa->y &= ~0x3;
 
-        /* move him down one because there is a one pixel gap in the image */
         koopa->y++;
 
     } else {
-        /* he is falling now */
         //koopa->falling = 1;
     }
-
+*/
 
     /* update animation if moving */
     if (koopa->move) {
         koopa->counter++;
+        /**
         if (koopa->counter >= koopa->animation_delay) {
             koopa->frame = koopa->frame + 16;
             if (koopa->frame > 16) {
@@ -535,6 +506,7 @@ void koopa_update(struct Koopa* koopa, int xscroll) {
             sprite_set_offset(koopa->sprite, koopa->frame);
             koopa->counter = 0;
         }
+        */
     }
 
     /* set on screen position */
