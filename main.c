@@ -12,6 +12,8 @@
 /* include the sprite image we are using */
 //#include "koopa.h"
 
+#include "flappy.h"
+
 /* include the tile map we are using */
 #include "map.h"
 
@@ -336,9 +338,10 @@ void sprite_set_offset(struct Sprite* sprite, int offset) {
 void setup_sprite_image() {
     /* load the palette from the image into palette memory*/
     //memcpy16_dma((unsigned short*) sprite_palette, (unsigned short*) koopa_palette, PALETTE_SIZE);
-
+    memcpy16_dma((unsigned short*) sprite_palette, (unsigned short*) flappy_palette, PALETTE_SIZE);
     /* load the image into sprite image memory */
     //memcpy16_dma((unsigned short*) sprite_image_memory, (unsigned short*) koopa_data, (koopa_width * koopa_height) / 2);
+    memcpy16_dma((unsigned short*) sprite_image_memory, (unsigned short*) flappy_data, (flappy_width * flappy_height) / 2);
 }
 
 /* a struct for the koopa's logic and behavior */
@@ -370,8 +373,8 @@ struct Koopa {
 
 /* initialize the koopa */
 void koopa_init(struct Koopa* koopa) {
-    koopa->x = 100;
-    koopa->y = 113;
+    koopa->x = 120;
+    koopa->y = 70;
     koopa->yvel = 0;
     koopa->gravity = 50;
     koopa->move = 0;
@@ -389,6 +392,13 @@ int koopa_right(struct Koopa* koopa) {
 }
 
 int koopa_down(struct Koopa* koopa){
+    koopa->move = 1;
+    koopa->y--;
+    return 0;
+
+}
+
+int flappy_up(struct Koopa* koopa){
     koopa->move = 1;
     koopa->y--;
     return 0;
@@ -528,8 +538,8 @@ int main() {
     sprite_clear();
 
     /* create the koopa */
-    //struct Koopa koopa;
-    //koopa_init(&koopa);
+    struct Koopa koopa;
+    koopa_init(&koopa);
 
     /* set initial scroll to 0 */
     int xscroll = 0;
@@ -537,17 +547,18 @@ int main() {
     /* loop forever */
     while (1) {
         /* update the koopa */
-        //koopa_update(&koopa, xscroll);
+        koopa_update(&koopa, xscroll);
 
         /* now the arrow keys move the koopa */
-        if (button_pressed(BUTTON_RIGHT)) {
-            /**
-            if (koopa_right(&koopa)) {
-                xscroll++;
+        if (button_pressed(BUTTON_UP)) {
+           
+            if (flappy_up(&koopa)) {
+                int x = 1;
             }
-            */
             
-            //xscroll++;
+            
+
+            
     
         } else if (button_pressed(BUTTON_LEFT)) {
             /**
