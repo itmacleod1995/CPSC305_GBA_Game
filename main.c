@@ -12,7 +12,9 @@
 /* include the sprite image we are using */
 //#include "bird.h"
 
-#include "flappy.h"
+//#include "flappy.h"
+
+#include "sprites.h"
 
 /* include the tile map we are using */
 #include "map.h"
@@ -315,9 +317,9 @@ void sprite_set_offset(struct Sprite* sprite, int offset) {
 /* setup the sprite image and palette */
 void setup_sprite_image() {
     /* load the palette from the image into palette memory*/
-    memcpy16_dma((unsigned short*) sprite_palette, (unsigned short*) flappy_palette, PALETTE_SIZE);
+    memcpy16_dma((unsigned short*) sprite_palette, (unsigned short*) sprites_palette, PALETTE_SIZE);
     /* load the image into sprite image memory */
-    memcpy16_dma((unsigned short*) sprite_image_memory, (unsigned short*) flappy_data, (flappy_width * flappy_height) / 2);
+    memcpy16_dma((unsigned short*) sprite_image_memory, (unsigned short*) sprites_data, (sprites_width * sprites_height) / 2);
 }
 
 /* a struct for the bird's logic and behavior */
@@ -340,11 +342,11 @@ struct Bird {
     /* whether the bird is moving right now or not */
     int move;
 
-    /* the number of pixels away from the edge of the screen the bird stays */
-    int border;
+};
 
-    /* if the bird is currently falling */
-    int falling;
+struct Pipe {
+    struct Sprite* sprite;
+    int x, y;
 };
 
 /* initialize the bird */
@@ -355,7 +357,15 @@ void bird_init(struct Bird* bird) {
     bird->gravity = 50;
     bird->move = 0;
     bird->counter = 0;
-    bird->sprite = sprite_init(bird->x, bird->y, SIZE_32_32, 0, 0, 0, 0);
+    bird->sprite = sprite_init(bird->x, bird->y, SIZE_16_16, 0, 0, 0, 0);
+}
+
+void pipe_init(struct Pipe* pipe){
+    pipe->x = 180;
+    pipe->y = 128;
+    pipe->sprite = sprite_init(pipe->x, pipe->y, SIZE_16_32,0,0,8,0);
+
+
 }
 
 int bird_right(struct Bird* bird) {
@@ -402,6 +412,15 @@ void bird_update(struct Bird* bird, int xscroll) {
     sprite_position(bird->sprite, bird->x, bird->y);
 }
 
+void pipe_scroll(struct Pipe* pipe){
+    pipe->x--;
+    if(pipe->x < 0){
+        pipe->x = 240;
+    }
+    sprite_position(pipe->sprite, pipe->x, pipe->y);
+
+}
+
 /* the main function */
 int main() {
     /* we set the mode to mode 0 with bg0 on */
@@ -420,6 +439,10 @@ int main() {
     struct Bird bird;
     bird_init(&bird);
 
+    /* create the pip */
+    struct Pipe pipe;
+    pipe_init(&pipe);
+
     /* set initial scroll to 0 */
     int xscroll = 0;
 
@@ -427,6 +450,11 @@ int main() {
     while (1) {
         /* update the bird */
         bird_update(&bird, xscroll);
+
+        if(button_pressed(BUTTON_RIGHT)){
+            xscroll++;
+            pipe_scroll(&pipe);
+        }   
 
         /* now the arrow keys move the bird */
         if (button_pressed(BUTTON_UP)) {
@@ -442,7 +470,7 @@ int main() {
             bird_stop(&bird);
         }
         
-        xscroll++;
+        //xscroll++;
 
         /* wait for vblank before scrolling and moving sprites */
         wait_vblank();
