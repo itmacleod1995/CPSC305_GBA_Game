@@ -303,28 +303,6 @@ void sprite_move(struct Sprite* sprite, int dx, int dy) {
     sprite_position(sprite, x + dx, y + dy);
 }
 
-/* change the vertical flip flag */
-void sprite_set_vertical_flip(struct Sprite* sprite, int vertical_flip) {
-    if (vertical_flip) {
-        /* set the bit */
-        sprite->attribute1 |= 0x2000;
-    } else {
-        /* clear the bit */
-        sprite->attribute1 &= 0xdfff;
-    }
-}
-
-/* change the vertical flip flag */
-void sprite_set_horizontal_flip(struct Sprite* sprite, int horizontal_flip) {
-    if (horizontal_flip) {
-        /* set the bit */
-        sprite->attribute1 |= 0x1000;
-    } else {
-        /* clear the bit */
-        sprite->attribute1 &= 0xefff;
-    }
-}
-
 /* change the tile offset of a sprite */
 void sprite_set_offset(struct Sprite* sprite, int offset) {
     /* clear the old offset */
