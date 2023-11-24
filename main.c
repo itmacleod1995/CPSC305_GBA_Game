@@ -10,7 +10,7 @@
 #include "background.h"
 
 /* include the sprite image we are using */
-//#include "koopa.h"
+//#include "bird.h"
 
 #include "flappy.h"
 
@@ -337,81 +337,81 @@ void sprite_set_offset(struct Sprite* sprite, int offset) {
 /* setup the sprite image and palette */
 void setup_sprite_image() {
     /* load the palette from the image into palette memory*/
-    //memcpy16_dma((unsigned short*) sprite_palette, (unsigned short*) koopa_palette, PALETTE_SIZE);
+    //memcpy16_dma((unsigned short*) sprite_palette, (unsigned short*) bird_palette, PALETTE_SIZE);
     memcpy16_dma((unsigned short*) sprite_palette, (unsigned short*) flappy_palette, PALETTE_SIZE);
     /* load the image into sprite image memory */
-    //memcpy16_dma((unsigned short*) sprite_image_memory, (unsigned short*) koopa_data, (koopa_width * koopa_height) / 2);
+    //memcpy16_dma((unsigned short*) sprite_image_memory, (unsigned short*) bird_data, (bird_width * bird_height) / 2);
     memcpy16_dma((unsigned short*) sprite_image_memory, (unsigned short*) flappy_data, (flappy_width * flappy_height) / 2);
 }
 
-/* a struct for the koopa's logic and behavior */
-struct Koopa {
+/* a struct for the bird's logic and behavior */
+struct Bird {
     /* the actual sprite attribute info */
     struct Sprite* sprite;
 
     /* the x and y postion in pixels */
     int x, y;
 
-    /* the koopa's y velocity in 1/256 pixels/second */
+    /* the bird's y velocity in 1/256 pixels/second */
     int yvel;
 
-    /* the koopa's y acceleration in 1/256 pixels/second^2 */
+    /* the bird's y acceleration in 1/256 pixels/second^2 */
     int gravity; 
 
     /* the animation counter counts how many frames until we flip */
     int counter;
 
-    /* whether the koopa is moving right now or not */
+    /* whether the bird is moving right now or not */
     int move;
 
-    /* the number of pixels away from the edge of the screen the koopa stays */
+    /* the number of pixels away from the edge of the screen the bird stays */
     int border;
 
-    /* if the koopa is currently falling */
+    /* if the bird is currently falling */
     int falling;
 };
 
-/* initialize the koopa */
-void koopa_init(struct Koopa* koopa) {
-    koopa->x = 120;
-    koopa->y = 70;
-    koopa->yvel = 0;
-    koopa->gravity = 50;
-    koopa->move = 0;
-    koopa->counter = 0;
-    koopa->sprite = sprite_init(koopa->x, koopa->y, SIZE_32_32, 0, 0, 0, 0);
+/* initialize the bird */
+void bird_init(struct Bird* bird) {
+    bird->x = 120;
+    bird->y = 70;
+    bird->yvel = 0;
+    bird->gravity = 50;
+    bird->move = 0;
+    bird->counter = 0;
+    bird->sprite = sprite_init(bird->x, bird->y, SIZE_32_32, 0, 0, 0, 0);
 }
 
-int koopa_right(struct Koopa* koopa) {
+int bird_right(struct Bird* bird) {
     // face right 
-    koopa->move = 1;
+    bird->move = 1;
 
-    koopa->x++;
+    bird->x++;
     return 0;
     
 }
 
-int koopa_down(struct Koopa* koopa){
-    koopa->move = 1;
-    koopa->y++;
+int bird_down(struct Bird* bird){
+    bird->move = 1;
+    bird->y++;
     return 0;
 
 }
 
-int flappy_up(struct Koopa* koopa){
-    koopa->move = 1;
-    koopa->y--;
+int flappy_up(struct Bird* bird){
+    bird->move = 1;
+    bird->y--;
     return 0;
 
 }
 
-// stop the koopa from walking left/right 
+// stop the bird from walking left/right 
 
-void koopa_stop(struct Koopa* koopa) {
-    koopa->move = 0;
-    //koopa->frame = 0;
-    koopa->counter = 7;
-    //sprite_set_offset(koopa->sprite, koopa->frame);
+void bird_stop(struct Bird* bird) {
+    bird->move = 0;
+    //bird->frame = 0;
+    bird->counter = 7;
+    //sprite_set_offset(bird->sprite, bird->frame);
 }
 
 
@@ -472,55 +472,55 @@ unsigned short tile_lookup(int x, int y, int xscroll, int yscroll,
     return tilemap[index + offset];
 }
 
-/* update the koopa */
-void koopa_update(struct Koopa* koopa, int xscroll) {
+/* update the bird */
+void bird_update(struct Bird* bird, int xscroll) {
     /* update y position and speed if falling */
     /*
-    if (koopa->falling) {
-        koopa->y += (koopa->yvel >> 8);
-        koopa->yvel += koopa->gravity;
+    if (bird->falling) {
+        bird->y += (bird->yvel >> 8);
+        bird->yvel += bird->gravity;
     }
     */
 
-    /* check which tile the koopa's feet are over */
-    unsigned short tile = tile_lookup(koopa->x + 8, koopa->y + 32, xscroll, 0, map,
+    /* check which tile the bird's feet are over */
+    unsigned short tile = tile_lookup(bird->x + 8, bird->y + 32, xscroll, 0, map,
             map_width, map_height);
 
     /* if it's block tile
-     * these numbers refer to the tile indices of the blocks the koopa can walk on */
+     * these numbers refer to the tile indices of the blocks the bird can walk on */
     /**
     if ((tile >= 1 && tile <= 6) || 
             (tile >= 12 && tile <= 17)) {
         
-        koopa->falling = 0;
-        koopa->yvel = 0;
+        bird->falling = 0;
+        bird->yvel = 0;
 
-        koopa->y &= ~0x3;
+        bird->y &= ~0x3;
 
-        koopa->y++;
+        bird->y++;
 
     } else {
-        //koopa->falling = 1;
+        //bird->falling = 1;
     }
 */
 
     /* update animation if moving */
-    if (koopa->move) {
-        koopa->counter++;
+    if (bird->move) {
+        bird->counter++;
         /**
-        if (koopa->counter >= koopa->animation_delay) {
-            koopa->frame = koopa->frame + 16;
-            if (koopa->frame > 16) {
-                koopa->frame = 0;
+        if (bird->counter >= bird->animation_delay) {
+            bird->frame = bird->frame + 16;
+            if (bird->frame > 16) {
+                bird->frame = 0;
             }
-            sprite_set_offset(koopa->sprite, koopa->frame);
-            koopa->counter = 0;
+            sprite_set_offset(bird->sprite, bird->frame);
+            bird->counter = 0;
         }
         */
     }
 
     /* set on screen position */
-    sprite_position(koopa->sprite, koopa->x, koopa->y);
+    sprite_position(bird->sprite, bird->x, bird->y);
 }
 
 /* the main function */
@@ -537,37 +537,37 @@ int main() {
     /* clear all the sprites on screen now */
     sprite_clear();
 
-    /* create the koopa */
-    struct Koopa koopa;
-    koopa_init(&koopa);
+    /* create the bird */
+    struct Bird bird;
+    bird_init(&bird);
 
     /* set initial scroll to 0 */
     int xscroll = 0;
 
     /* loop forever */
     while (1) {
-        /* update the koopa */
-        koopa_update(&koopa, xscroll);
+        /* update the bird */
+        bird_update(&bird, xscroll);
 
-        /* now the arrow keys move the koopa */
+        /* now the arrow keys move the bird */
         if (button_pressed(BUTTON_UP)) {
-            if (flappy_up(&koopa)) {
+            if (flappy_up(&bird)) {
                 int x = 1;
             }            
     
         } else if (button_pressed(BUTTON_DOWN)) {            
-            if (koopa_down(&koopa)) {
+            if (bird_down(&bird)) {
                 int x = 1;
             }
         } else {
-            koopa_stop(&koopa);
+            bird_stop(&bird);
         }
         
         xscroll++;
         /* check for jumping */
         /**
         if (button_pressed(BUTTON_A)) {
-            koopa_jump(&koopa);
+            bird_jump(&bird);
         }
         */
 
