@@ -337,10 +337,8 @@ void sprite_set_offset(struct Sprite* sprite, int offset) {
 /* setup the sprite image and palette */
 void setup_sprite_image() {
     /* load the palette from the image into palette memory*/
-    //memcpy16_dma((unsigned short*) sprite_palette, (unsigned short*) bird_palette, PALETTE_SIZE);
     memcpy16_dma((unsigned short*) sprite_palette, (unsigned short*) flappy_palette, PALETTE_SIZE);
     /* load the image into sprite image memory */
-    //memcpy16_dma((unsigned short*) sprite_image_memory, (unsigned short*) bird_data, (bird_width * bird_height) / 2);
     memcpy16_dma((unsigned short*) sprite_image_memory, (unsigned short*) flappy_data, (flappy_width * flappy_height) / 2);
 }
 
@@ -414,109 +412,12 @@ void bird_stop(struct Bird* bird) {
     //sprite_set_offset(bird->sprite, bird->frame);
 }
 
-
-
-/* finds which tile a screen coordinate maps to, taking scroll into acco  unt */
-unsigned short tile_lookup(int x, int y, int xscroll, int yscroll,
-        const unsigned short* tilemap, int tilemap_w, int tilemap_h) {
-
-    /* adjust for the scroll */
-    x += xscroll;
-    y += yscroll;
-
-    /* convert from screen coordinates to tile coordinates */
-    x >>= 3;
-    y >>= 3;
-
-    /* account for wraparound */
-    while (x >= tilemap_w) {
-        x -= tilemap_w;
-    }
-    while (y >= tilemap_h) {
-        y -= tilemap_h;
-    }
-    while (x < 0) {
-        x += tilemap_w;
-    }
-    while (y < 0) {
-        y += tilemap_h;
-    }
-
-    /* the larger screen maps (bigger than 32x32) are made of multiple stitched
-       together - the offset is used for finding which screen block we are in
-       for these cases */
-    int offset = 0;
-
-    /* if the width is 64, add 0x400 offset to get to tile maps on right   */
-    if (tilemap_w == 64 && x >= 32) {
-        x -= 32;
-        offset += 0x400;
-    }
-
-    /* if height is 64 and were down there */
-    if (tilemap_h == 64 && y >= 32) {
-        y -= 32;
-
-        /* if width is also 64 add 0x800, else just 0x400 */
-        if (tilemap_w == 64) {
-            offset += 0x800;
-        } else {
-            offset += 0x400;
-        }
-    }
-
-    /* find the index in this tile map */
-    int index = y * 32 + x;
-
-    /* return the tile */
-    return tilemap[index + offset];
-}
-
 /* update the bird */
 void bird_update(struct Bird* bird, int xscroll) {
-    /* update y position and speed if falling */
-    /*
-    if (bird->falling) {
-        bird->y += (bird->yvel >> 8);
-        bird->yvel += bird->gravity;
-    }
-    */
-
-    /* check which tile the bird's feet are over */
-    unsigned short tile = tile_lookup(bird->x + 8, bird->y + 32, xscroll, 0, map,
-            map_width, map_height);
-
-    /* if it's block tile
-     * these numbers refer to the tile indices of the blocks the bird can walk on */
-    /**
-    if ((tile >= 1 && tile <= 6) || 
-            (tile >= 12 && tile <= 17)) {
-        
-        bird->falling = 0;
-        bird->yvel = 0;
-
-        bird->y &= ~0x3;
-
-        bird->y++;
-
-    } else {
-        //bird->falling = 1;
-    }
-*/
 
     /* update animation if moving */
     if (bird->move) {
         bird->counter++;
-        /**
-        if (bird->counter >= bird->animation_delay) {
-            bird->frame = bird->frame + 16;
-            if (bird->frame > 16) {
-                bird->frame = 0;
-            }
-            sprite_set_offset(bird->sprite, bird->frame);
-            bird->counter = 0;
-        }
-        */
     }
 
     /* set on screen position */
@@ -564,12 +465,6 @@ int main() {
         }
         
         xscroll++;
-        /* check for jumping */
-        /**
-        if (button_pressed(BUTTON_A)) {
-            bird_jump(&bird);
-        }
-        */
 
         /* wait for vblank before scrolling and moving sprites */
         wait_vblank();
