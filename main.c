@@ -342,6 +342,9 @@ struct Bird {
     /* whether the bird is moving right now or not */
     int move;
 
+    /* Checks if there is a collision */
+    int collision;
+
 };
 
 struct Pipe {
@@ -357,6 +360,7 @@ void bird_init(struct Bird* bird) {
     bird->gravity = 50;
     bird->move = 0;
     bird->counter = 0;
+    bird->collision = 0;
     bird->sprite = sprite_init(bird->x, bird->y, SIZE_16_16, 0, 0, 0, 0);
 }
 
@@ -370,6 +374,10 @@ void pipe_init(struct Pipe* pipe){
 
 int bird_right(struct Bird* bird) {
     // face right 
+    if(bird->collision == 1){
+        bird->move = 0;
+        return 0;
+    }
     bird->move = 1;
 
     bird->x++;
@@ -421,6 +429,18 @@ void pipe_scroll(struct Pipe* pipe){
 
 }
 
+int collision(struct Bird* bird, struct Pipe* pipe){
+    if(bird->x == pipe->x - 16 && bird->y >= pipe->y - 8){
+        bird->collision = 1;
+        bird_stop(bird);
+        return 1;
+    }else {
+        bird->collision = 0;
+        return 0;
+    }
+
+}
+
 /* the main function */
 int main() {
     /* we set the mode to mode 0 with bg0 on */
@@ -452,8 +472,13 @@ int main() {
         bird_update(&bird, xscroll);
 
         if(button_pressed(BUTTON_RIGHT)){
-            xscroll++;
-            pipe_scroll(&pipe);
+            bird.collision = collision(&bird, &pipe);
+            if(bird.collision == 1){
+                bird_stop(&bird);
+            }else {
+                xscroll++;
+                pipe_scroll(&pipe);
+            }
         }   
 
         /* now the arrow keys move the bird */
