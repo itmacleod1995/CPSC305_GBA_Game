@@ -393,7 +393,7 @@ int koopa_right(struct Koopa* koopa) {
 
 int koopa_down(struct Koopa* koopa){
     koopa->move = 1;
-    koopa->y--;
+    koopa->y++;
     return 0;
 
 }
@@ -551,23 +551,16 @@ int main() {
 
         /* now the arrow keys move the koopa */
         if (button_pressed(BUTTON_UP)) {
-           
             if (flappy_up(&koopa)) {
                 int x = 1;
-            }
-            
-            
-
-            
+            }            
     
-        } else if (button_pressed(BUTTON_LEFT)) {
-            /**
-            if (koopa_left(&koopa)) {
-                xscroll--;
+        } else if (button_pressed(BUTTON_DOWN)) {            
+            if (koopa_down(&koopa)) {
+                int x = 1;
             }
-            */
         } else {
-            //koopa_stop(&koopa);
+            koopa_stop(&koopa);
         }
         
         xscroll++;
