@@ -518,6 +518,8 @@ int main() {
         if(button_pressed(BUTTON_RIGHT)){
             if(collision(&bird, &pipe) || collision(&bird, &pipe2) || collision(&bird, &pipe3) || collision(&bird, &pipe4)){
                 bird_stop(&bird);
+                bird.x = 120;
+                bird.y = 70;
             }else {
                 xscroll++;
                 pipe_scroll(&pipe);
