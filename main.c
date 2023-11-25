@@ -1,5 +1,5 @@
 /*
- * collide.c
+ * main.c
  * program which demonstrates sprites colliding with tiles
  */
 
@@ -14,7 +14,9 @@
 
 //#include "flappy.h"
 
-#include "sprites.h"
+//#include "sprites.h"
+
+#include "upside_down.h"
 
 /* include the tile map we are using */
 #include "map.h"
@@ -317,9 +319,11 @@ void sprite_set_offset(struct Sprite* sprite, int offset) {
 /* setup the sprite image and palette */
 void setup_sprite_image() {
     /* load the palette from the image into palette memory*/
-    memcpy16_dma((unsigned short*) sprite_palette, (unsigned short*) sprites_palette, PALETTE_SIZE);
+    //memcpy16_dma((unsigned short*) sprite_palette, (unsigned short*) sprites_palette, PALETTE_SIZE);
+    memcpy16_dma((unsigned short*) sprite_palette, (unsigned short*) upside_down_palette, PALETTE_SIZE);
     /* load the image into sprite image memory */
-    memcpy16_dma((unsigned short*) sprite_image_memory, (unsigned short*) sprites_data, (sprites_width * sprites_height) / 2);
+    //memcpy16_dma((unsigned short*) sprite_image_memory, (unsigned short*) sprites_data, (sprites_width * sprites_height) / 2);
+    memcpy16_dma((unsigned short*) sprite_image_memory, (unsigned short*) upside_down_data, (upside_down_width * upside_down_height) / 2);
 }
 
 /* a struct for the bird's logic and behavior */
@@ -364,12 +368,34 @@ void bird_init(struct Bird* bird) {
     bird->sprite = sprite_init(bird->x, bird->y, SIZE_16_16, 0, 0, 0, 0);
 }
 
+/** Pipe initials **/
+
 void pipe_init(struct Pipe* pipe){
     pipe->x = 180;
     pipe->y = 128;
     pipe->sprite = sprite_init(pipe->x, pipe->y, SIZE_16_32,0,0,8,0);
 
 
+}
+
+void pipe_init2(struct Pipe* pipe){
+    pipe->x = 60;
+    pipe->y = 128;
+    pipe->sprite = sprite_init(pipe->x, pipe->y, SIZE_16_32, 0, 0, 8, 0);
+
+}
+
+void pipe_init3(struct Pipe* pipe){
+    pipe->x = 60;
+    pipe->y = 100;
+    pipe->sprite = sprite_init(pipe->x, pipe->y, SIZE_16_32, 0,0,8,0);
+
+}
+
+void pipe_init4(struct Pipe* pipe){
+    pipe->x = 20;
+    pipe->y = 0;
+    pipe->sprite = sprite_init(pipe->x, pipe->y, SIZE_16_32, 0,0,44,0);
 }
 
 int bird_right(struct Bird* bird) {
@@ -431,6 +457,15 @@ void pipe_scroll(struct Pipe* pipe){
 
 int collision(struct Bird* bird, struct Pipe* pipe){
     if(bird->x == pipe->x - 16 && bird->y >= pipe->y - 8){
+        if(pipe->y == 0){
+            if(bird->y <= 20){
+                bird->collision = 1;
+                bird_stop(bird);
+            }else {
+                bird->collision = 0;
+                return 0;
+            }
+        }
         bird->collision = 1;
         bird_stop(bird);
         return 1;
@@ -459,9 +494,18 @@ int main() {
     struct Bird bird;
     bird_init(&bird);
 
-    /* create the pip */
+    /* create the pipe */
     struct Pipe pipe;
     pipe_init(&pipe);
+
+    struct Pipe pipe2;
+    pipe_init2(&pipe2);
+
+    struct Pipe pipe3;
+    pipe_init3(&pipe3);
+    
+    struct Pipe pipe4;
+    pipe_init4(&pipe4);
 
     /* set initial scroll to 0 */
     int xscroll = 0;
@@ -472,13 +516,25 @@ int main() {
         bird_update(&bird, xscroll);
 
         if(button_pressed(BUTTON_RIGHT)){
-            bird.collision = collision(&bird, &pipe);
+            if(collision(&bird, &pipe) || collision(&bird, &pipe2) || collision(&bird, &pipe3) || collision(&bird, &pipe4)){
+                bird_stop(&bird);
+            }else {
+                xscroll++;
+                pipe_scroll(&pipe);
+                pipe_scroll(&pipe2);
+                pipe_scroll(&pipe3);
+                pipe_scroll(&pipe4);
+                
+            }
+            //bird.collision = collision(&bird, &pipe);
+            /**
             if(bird.collision == 1){
                 bird_stop(&bird);
             }else {
                 xscroll++;
                 pipe_scroll(&pipe);
             }
+            **/
         }   
 
         /* now the arrow keys move the bird */
