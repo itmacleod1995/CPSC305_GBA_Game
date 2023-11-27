@@ -562,6 +562,14 @@ int main() {
         }
         
         xscroll++;
+        
+        if(collision(&bird, &pipe) || collision(&bird, &pipe2) || collision(&bird, &pipe3) || collision(&bird, &pipe4)){
+            bird_stop(&bird);
+            bird.x = 120;
+            bird.y = 70;
+        }
+
+
         pipe_scroll(&pipe);    
         pipe_scroll(&pipe2);
         pipe_scroll(&pipe3);
