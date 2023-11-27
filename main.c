@@ -154,13 +154,13 @@ void setup_background() {
             (background_width * background_height) / 2);
 
     /* set all control the bits in this register */
-    *bg0_control = 0 |    /* priority, 0 is highest, 3 is lowest */
-        (0 << 2)  |       /* the char block the image data is stored in */
-        (0 << 6)  |       /* the mosaic flag */
-        (1 << 7)  |       /* color mode, 0 is 16 colors, 1 is 256 colors */
-        (16 << 8) |       /* the screen block the tile data is stored in */
-        (1 << 13) |       /* wrapping flag */
-        (0 << 14);        /* bg size, 0 is 256x256 */
+    //*bg0_control = 0 |    /* priority, 0 is highest, 3 is lowest */
+        //(0 << 2)  |       /* the char block the image data is stored in */
+        //(0 << 6)  |       /* the mosaic flag */
+        //(1 << 7)  |       /* color mode, 0 is 16 colors, 1 is 256 colors */
+        //(16 << 8) |       /* the screen block the tile data is stored in */
+        //(1 << 13) |       /* wrapping flag */
+        //(0 << 14);        /* bg size, 0 is 256x256 */
 
     /* Background setup for parallax */
     *bg1_control = 1 |
@@ -172,7 +172,7 @@ void setup_background() {
         (0 << 14);
 
     /* load the tile data into screen block 16 */
-    memcpy16_dma((unsigned short*) screen_block(16), (unsigned short*) map, map_width * map_height);
+    //memcpy16_dma((unsigned short*) screen_block(16), (unsigned short*) map, map_width * map_height);
     
     /* Load map2 into screen block 24 */
     memcpy16_dma((unsigned short*) screen_block(24), (unsigned short*) map2, map2_width * map2_height);
@@ -487,7 +487,7 @@ int collision(struct Bird* bird, struct Pipe* pipe){
 /* the main function */
 int main() {
     /* we set the mode to mode 0 with bg0 on */
-    *display_control = MODE0 | BG0_ENABLE | BG1_ENABLE | SPRITE_ENABLE | SPRITE_MAP_1D;
+    *display_control = MODE0 | BG1_ENABLE | SPRITE_ENABLE | SPRITE_MAP_1D;
 
     /* setup the background 0 */
     setup_background();
