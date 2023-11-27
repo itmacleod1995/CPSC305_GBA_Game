@@ -398,13 +398,39 @@ void pipe_init4(struct Pipe* pipe){
     pipe->sprite = sprite_init(pipe->x, pipe->y, SIZE_16_32, 0,0,44,0);
 }
 
-/**
+
 void pipe_init5(struct Pipe* pipe){
-    pipe->x =
+    pipe->x = 100;
+    pipe->y = 128;
+    pipe->sprite = sprite_init(pipe->x, pipe->y, SIZE_16_32, 0,0,8,0);
 
 
 }
-*/
+
+void pipe_init6(struct Pipe* pipe){
+    pipe->x = 100;
+    pipe->y = 100;
+    pipe->sprite = sprite_init(pipe->x, pipe->y, SIZE_16_32, 0,0,8,0);
+}
+
+void pipe_init7(struct Pipe* pipe){
+    pipe->x = 100;
+    pipe->y = 72;
+    pipe->sprite = sprite_init(pipe->x, pipe->y, SIZE_16_32, 0,0,8,0);
+}
+
+void pipe_init8(struct Pipe* pipe){
+    pipe->x = 160;
+    pipe->y = 0;
+    pipe->sprite = sprite_init(pipe->x, pipe->y, SIZE_16_32, 0,0,44,0);
+}
+
+void pipe_init9(struct Pipe* pipe){
+    pipe->x = 160;
+    pipe->y = 28;
+    pipe->sprite = sprite_init(pipe->x, pipe->y, SIZE_16_32, 0,0,44,0);
+}
+
 
 int bird_right(struct Bird* bird) {
     // face right 
@@ -515,6 +541,21 @@ int main() {
     struct Pipe pipe4;
     pipe_init4(&pipe4);
 
+    struct Pipe pipe5;
+    pipe_init5(&pipe5);
+
+    struct Pipe pipe6;
+    pipe_init6(&pipe6);
+
+    struct Pipe pipe7;
+    pipe_init7(&pipe7);
+
+    struct Pipe pipe8;
+    pipe_init8(&pipe8);
+
+    struct Pipe pipe9;
+    pipe_init9(&pipe9);
+
     /* set initial scroll to 0 */
     int xscroll = 0;
 
@@ -563,7 +604,8 @@ int main() {
         
         xscroll++;
         
-        if(collision(&bird, &pipe) || collision(&bird, &pipe2) || collision(&bird, &pipe3) || collision(&bird, &pipe4)){
+        if(collision(&bird, &pipe) || collision(&bird, &pipe2) || collision(&bird, &pipe3) || collision(&bird, &pipe4) || collision(&bird, &pipe5) || collision(&bird, &pipe6) || collision(&bird, &pipe7)
+          || collision(&bird, &pipe8) || collision(&bird, &pipe9)){
             bird_stop(&bird);
             bird.x = 120;
             bird.y = 70;
@@ -574,7 +616,11 @@ int main() {
         pipe_scroll(&pipe2);
         pipe_scroll(&pipe3);
         pipe_scroll(&pipe4);
-    
+        pipe_scroll(&pipe5);
+        pipe_scroll(&pipe6);
+        pipe_scroll(&pipe7);
+        pipe_scroll(&pipe8);
+        pipe_scroll(&pipe9);
         /* wait for vblank before scrolling and moving sprites */
         wait_vblank();
         *bg0_x_scroll = xscroll;
