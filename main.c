@@ -610,8 +610,8 @@ int main() {
         if(collision(&bird, &pipe) || collision(&bird, &pipe2) || collision(&bird, &pipe3) || collision(&bird, &pipe4) || collision(&bird, &pipe5) || collision(&bird, &pipe6) || collision(&bird, &pipe7)
           || collision(&bird, &pipe8) || collision(&bird, &pipe9)){
             bird_stop(&bird);
-            bird.x = 120;
-            bird.y = 70;
+            bird.x = bird.x - 20;
+            //bird.y = 70;
         }
 
 
