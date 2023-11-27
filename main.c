@@ -370,14 +370,6 @@ void bird_init(struct Bird* bird) {
 
 /** Pipe initials **/
 
-void pipe_init(struct Pipe* pipe){
-    pipe->x = 180;
-    pipe->y = 128;
-    pipe->sprite = sprite_init(pipe->x, pipe->y, SIZE_16_32,0,0,12,0);
-
-
-}
-
 
 void pipe_init2(struct Pipe* pipe){
     pipe->x = 60;
@@ -394,7 +386,7 @@ void pipe_init3(struct Pipe* pipe){
 }
 
 void pipe_init4(struct Pipe* pipe){
-    pipe->x = 180;
+    pipe->x = 100;
     pipe->y = 0;
     pipe->sprite = sprite_init(pipe->x, pipe->y, SIZE_16_32, 0,0,48,0);
 }
@@ -532,8 +524,6 @@ int main() {
     bird_init(&bird);
 
     /* create the pipe */
-    struct Pipe pipe;
-   // pipe_init(&pipe);
 
     struct Pipe pipe2;
     pipe_init2(&pipe2);
@@ -566,7 +556,7 @@ int main() {
     while (1) {
         /* update the bird */
         bird_update(&bird, xscroll);
-
+/*
         if(button_pressed(BUTTON_RIGHT)){
             if(collision(&bird, &pipe) || collision(&bird, &pipe2) || collision(&bird, &pipe3) || collision(&bird, &pipe4)){
                 bird_stop(&bird);
@@ -581,16 +571,16 @@ int main() {
 
             }
             //bird.collision = collision(&bird, &pipe);
-            /**
+            
             if(bird.collision == 1){
                 bird_stop(&bird);
             }else {
                 xscroll++;
                 pipe_scroll(&pipe);
             }
-            **/
+            
         }   
-
+*/
         /* now the arrow keys move the bird */
         if (button_pressed(BUTTON_UP)) {
             if (flappy_up(&bird)) {
@@ -607,7 +597,7 @@ int main() {
 
         xscroll++;
 
-        if(collision(&bird, &pipe) || collision(&bird, &pipe2) || collision(&bird, &pipe3) || collision(&bird, &pipe4) || collision(&bird, &pipe5) || collision(&bird, &pipe6) || collision(&bird, &pipe7)
+        if(collision(&bird, &pipe2) || collision(&bird, &pipe3) || collision(&bird, &pipe4) || collision(&bird, &pipe5) || collision(&bird, &pipe6) || collision(&bird, &pipe7)
           || collision(&bird, &pipe8) || collision(&bird, &pipe9)){
             bird_stop(&bird);
             bird.x = bird.x - 10;
