@@ -414,7 +414,7 @@ int bird_right(struct Bird* bird) {
     }
     bird->move = 1;
 
-    bird->x++;
+    //bird->x++;
     return 0;
     
 }
@@ -561,8 +561,12 @@ int main() {
             bird_stop(&bird);
         }
         
-        //xscroll++;
-
+        xscroll++;
+        pipe_scroll(&pipe);    
+        pipe_scroll(&pipe2);
+        pipe_scroll(&pipe3);
+        pipe_scroll(&pipe4);
+    
         /* wait for vblank before scrolling and moving sprites */
         wait_vblank();
         *bg0_x_scroll = xscroll;
