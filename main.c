@@ -398,6 +398,14 @@ void pipe_init4(struct Pipe* pipe){
     pipe->sprite = sprite_init(pipe->x, pipe->y, SIZE_16_32, 0,0,44,0);
 }
 
+/**
+void pipe_init5(struct Pipe* pipe){
+    pipe->x =
+
+
+}
+*/
+
 int bird_right(struct Bird* bird) {
     // face right 
     if(bird->collision == 1){
