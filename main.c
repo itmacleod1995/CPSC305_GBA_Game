@@ -378,6 +378,7 @@ void pipe_init(struct Pipe* pipe){
 
 }
 
+
 void pipe_init2(struct Pipe* pipe){
     pipe->x = 60;
     pipe->y = 128;
@@ -420,16 +421,17 @@ void pipe_init7(struct Pipe* pipe){
 }
 
 void pipe_init8(struct Pipe* pipe){
-    pipe->x = 160;
+    pipe->x = 200;
     pipe->y = 0;
     pipe->sprite = sprite_init(pipe->x, pipe->y, SIZE_16_32, 0,0,44,0);
 }
 
 void pipe_init9(struct Pipe* pipe){
-    pipe->x = 160;
+    pipe->x = 200;
     pipe->y = 28;
     pipe->sprite = sprite_init(pipe->x, pipe->y, SIZE_16_32, 0,0,44,0);
 }
+
 
 
 int bird_right(struct Bird* bird) {
@@ -491,10 +493,11 @@ void pipe_scroll(struct Pipe* pipe){
 
 int collision(struct Bird* bird, struct Pipe* pipe){
     if(bird->x == pipe->x - 16 && bird->y >= pipe->y - 8){
-        if(pipe->y == 0){
-            if(bird->y <= 20){
+        if(pipe->y == 0 || pipe->y == 28){
+            if(bird->y <= 50){
                 bird->collision = 1;
                 bird_stop(bird);
+                return 1;
             }else {
                 bird->collision = 0;
                 return 0;
@@ -530,7 +533,7 @@ int main() {
 
     /* create the pipe */
     struct Pipe pipe;
-    pipe_init(&pipe);
+   // pipe_init(&pipe);
 
     struct Pipe pipe2;
     pipe_init2(&pipe2);
@@ -612,7 +615,7 @@ int main() {
         }
 
 
-        pipe_scroll(&pipe);    
+        //pipe_scroll(&pipe);    
         pipe_scroll(&pipe2);
         pipe_scroll(&pipe3);
         pipe_scroll(&pipe4);
