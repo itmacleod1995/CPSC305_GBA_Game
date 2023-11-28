@@ -483,9 +483,10 @@ void pipe_scroll(struct Pipe* pipe){
 
 }
 
-int collision(struct Bird* bird, struct Pipe* pipe){
+int collision(struct Bird* bird, struct Pipe* pipe){i
+    //if the bird collides with a pipe (pipe->x - 16 is the left side of the pipe, pipe->y - 8 
     if(bird->x == pipe->x - 16 && bird->y >= pipe->y - 8){
-        if(pipe->y == 0 || pipe->y == 28){
+        if(pipe->y == 0 || pipe->y == 28){ //if the pipe is upside down (aka y == 0)
             if(bird->y <= 50){
                 bird->collision = 1;
                 bird_stop(bird);
