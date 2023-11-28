@@ -607,8 +607,8 @@ int main() {
           || collision(&bird, &pipe8) || collision(&bird, &pipe9)){
             if(num_of_collisions == 5){
                 bird_stop(&bird);
-                bird.x = 200;
-                bird.y = 160;
+                bird.x = 120;
+                bird.y = 70;
             }else {
                 bird_stop(&bird);
                 bird.x = bird.x - 10;
