@@ -344,7 +344,7 @@ struct Bird {
     int counter;
 
     /* whether the bird is moving right now or not */
-    int move;
+   // int move;
 
     /* Checks if there is a collision */
     int collision;
@@ -362,7 +362,7 @@ void bird_init(struct Bird* bird) {
     bird->y = 70;
     bird->yvel = 0;
     bird->gravity = 50;
-    bird->move = 0;
+    //bird->move = 0;
     bird->counter = 0;
     bird->collision = 0;
     bird->sprite = sprite_init(bird->x, bird->y, SIZE_16_16, 0, 0, 0, 0);
@@ -425,7 +425,7 @@ void pipe_init9(struct Pipe* pipe){
 }
 
 
-
+/*
 int bird_right(struct Bird* bird) {
     // face right 
     if(bird->collision == 1){
@@ -438,16 +438,16 @@ int bird_right(struct Bird* bird) {
     return 0;
 
 }
-
+*/
 int bird_down(struct Bird* bird){
-    bird->move = 1;
+   // bird->move = 1;
     bird->y++;
     return 0;
 
 }
 
 int flappy_up(struct Bird* bird){
-    bird->move = 1;
+    //bird->move = 1;
     bird->y--;
     return 0;
 
@@ -456,7 +456,7 @@ int flappy_up(struct Bird* bird){
 // stop the bird from flying left/right 
 
 void bird_stop(struct Bird* bird) {
-    bird->move = 0;
+    //bird->move = 0;
     //bird->frame = 0;
     bird->counter = 7;
     //sprite_set_offset(bird->sprite, bird->frame);
@@ -466,9 +466,9 @@ void bird_stop(struct Bird* bird) {
 void bird_update(struct Bird* bird, int xscroll) {
 
     /* update animation if moving */
-    if (bird->move) {
+   // if (bird->move) {
         bird->counter++;
-    }
+   // }
 
     /* set on screen position */
     sprite_position(bird->sprite, bird->x, bird->y);
