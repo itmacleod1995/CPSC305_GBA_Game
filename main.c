@@ -505,6 +505,8 @@ int collision(struct Bird* bird, struct Pipe* pipe){
 
 }
 
+int inc_collision(int collisions);
+
 /* the main function */
 int main() {
     /* we set the mode to mode 0 with bg0 on */
@@ -552,10 +554,14 @@ int main() {
     /* set initial scroll to 0 */
     int xscroll = 0;
 
+    int collisions = 0;
+
     /* loop forever */
     while (1) {
         /* update the bird */
         bird_update(&bird, xscroll);
+        
+        int num_of_collisions = inc_collision(collisions);
 /*
         if(button_pressed(BUTTON_RIGHT)){
             if(collision(&bird, &pipe) || collision(&bird, &pipe2) || collision(&bird, &pipe3) || collision(&bird, &pipe4)){
@@ -599,8 +605,17 @@ int main() {
 
         if(collision(&bird, &pipe2) || collision(&bird, &pipe3) || collision(&bird, &pipe4) || collision(&bird, &pipe5) || collision(&bird, &pipe6) || collision(&bird, &pipe7)
           || collision(&bird, &pipe8) || collision(&bird, &pipe9)){
-            bird_stop(&bird);
-            bird.x = bird.x - 10;
+            if(num_of_collisions == 5){
+                bird_stop(&bird);
+                bird.x = 200;
+                bird.y = 160;
+            }else {
+                bird_stop(&bird);
+                bird.x = bird.x - 10;
+                collisions++;
+            }
+            //bird_stop(&bird);
+            //bird.x = bird.x - 10;
             //bird.y = 70;
         }
 

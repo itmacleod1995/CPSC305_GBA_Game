@@ -1,12 +1,13 @@
-// add_collision
 
 .global inc_collision
 
 inc_collision:
-.top    
+.top:    
     add r0, r0, #1
     cmp r0, #5
-    beg .five
+    bge .five
+    b .end
+.five:
     mov pc, lr
-.five
+.end:
     mov pc, lr    
