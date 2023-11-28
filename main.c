@@ -439,18 +439,15 @@ int bird_right(struct Bird* bird) {
 
 }
 */
-int bird_down(struct Bird* bird){
+void bird_down(struct Bird* bird){
    // bird->move = 1;
     bird->y++;
-    return 0;
 
 }
 
-int flappy_up(struct Bird* bird){
+void bird_up(struct Bird* bird){
     //bird->move = 1;
     bird->y--;
-    return 0;
-
 }
 
 // stop the bird from flying left/right 
@@ -590,7 +587,7 @@ int main() {
 */
         /* now the arrow keys move the bird */
         if (button_pressed(BUTTON_UP)&&bird.y>0) {
-            flappy_up(&bird);            
+            bird_up(&bird);            
 
         } else if (button_pressed(BUTTON_DOWN)&&bird.y<144) {            
             bird_down(&bird);
