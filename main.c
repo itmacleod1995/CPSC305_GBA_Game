@@ -588,18 +588,15 @@ int main() {
         }   
 */
         /* now the arrow keys move the bird */
-        if (button_pressed(BUTTON_UP)) {
-            if (flappy_up(&bird)) {
-                int x = 1;
-            }            
+        if (button_pressed(BUTTON_UP)&&bird.y>0) {
+            flappy_up(&bird);            
 
-        } else if (button_pressed(BUTTON_DOWN)) {            
-            if (bird_down(&bird)) {
-                int x = 1;
-            }
-        } else {
+        } else if (button_pressed(BUTTON_DOWN)&&bird.y<144) {            
+            bird_down(&bird);
+           
+        } /*else {
             bird_stop(&bird);
-        }
+        }*/
 
         xscroll++;
 
