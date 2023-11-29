@@ -27,7 +27,7 @@
 /* the tile mode flags needed for display control register */
 #define MODE0 0x00
 #define BG0_ENABLE 0x100
-#define BG1_ENABLE 0x200 //enable second backgroung to be on
+#define BG1_ENABLE 0x200 //enable second background to be on
 
 /* flags to set sprite handling in display control register */
 #define SPRITE_MAP_2D 0x0
@@ -351,6 +351,7 @@ struct Bird {
 
 };
 
+/** Struct Pipe */
 struct Pipe {
     struct Sprite* sprite;
     int x, y;
@@ -368,9 +369,7 @@ void bird_init(struct Bird* bird) {
     bird->sprite = sprite_init(bird->x, bird->y, SIZE_16_16, 0, 0, 0, 0);
 }
 
-/** Pipe initials **/
-
-
+/** Pipe initializations **/
 void pipe_init2(struct Pipe* pipe){
     pipe->x = 60;
     pipe->y = 128;
@@ -439,19 +438,21 @@ int bird_right(struct Bird* bird) {
 
 }
 */
+
+/** Move bird down */
 void bird_down(struct Bird* bird){
    // bird->move = 1;
     bird->y++;
 
 }
 
+/** Move bird up **/
 void bird_up(struct Bird* bird){
     //bird->move = 1;
     bird->y--;
 }
 
 // stop the bird from flying left/right 
-
 void bird_stop(struct Bird* bird) {
     //bird->move = 0;
     //bird->frame = 0;
@@ -471,6 +472,7 @@ void bird_update(struct Bird* bird, int xscroll) {
     sprite_position(bird->sprite, bird->x, bird->y);
 }
 
+/* Pipe scrolls with background */
 void pipe_scroll(struct Pipe* pipe){
     pipe->x--;
     if(pipe->x < 0){
@@ -480,6 +482,7 @@ void pipe_scroll(struct Pipe* pipe){
 
 }
 
+/* Checks if bird collides with pipe sprites */
 int collision(struct Bird* bird, struct Pipe* pipe){
     //if the bird collides with a pipe (pipe->x - 16 is the left side of the pipe, pipe->y - 8 
     if(bird->x == pipe->x - 16 && bird->y >= pipe->y - 8){
@@ -503,6 +506,7 @@ int collision(struct Bird* bird, struct Pipe* pipe){
 
 }
 
+/* Assembly function that keeps track of amount of collisions the bird has; if 5 collisions, bird is recentered on screen*/
 int inc_collision(int collisions);
 
 /* the main function */
@@ -523,7 +527,7 @@ int main() {
     struct Bird bird;
     bird_init(&bird);
 
-    /* create the pipe */
+    /* create the pipes */
 
     struct Pipe pipe2;
     pipe_init2(&pipe2);
@@ -560,31 +564,7 @@ int main() {
         bird_update(&bird, xscroll);
         
         int num_of_collisions = inc_collision(collisions);
-/*
-        if(button_pressed(BUTTON_RIGHT)){
-            if(collision(&bird, &pipe) || collision(&bird, &pipe2) || collision(&bird, &pipe3) || collision(&bird, &pipe4)){
-                bird_stop(&bird);
-                bird.x = 120;
-                bird.y = 70;
-            }else {
-                xscroll++;
-                pipe_scroll(&pipe);
-                pipe_scroll(&pipe2);
-                pipe_scroll(&pipe3);
-                pipe_scroll(&pipe4);
-
-            }
-            //bird.collision = collision(&bird, &pipe);
-            
-            if(bird.collision == 1){
-                bird_stop(&bird);
-            }else {
-                xscroll++;
-                pipe_scroll(&pipe);
-            }
-            
-        }   
-*/
+        
         /* now the arrow keys move the bird */
         if (button_pressed(BUTTON_UP)&&bird.y>0) {
             bird_up(&bird);            
