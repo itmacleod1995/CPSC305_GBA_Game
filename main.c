@@ -563,7 +563,7 @@ int main() {
                 bird_stop(&bird);
                 bird.x = 120;
                 bird.y = 70;
-                num_of_collisions = 0; //reset collision counter
+                collisions = 0; //reset collision counter
             }else {
                 bird_stop(&bird);
                 bird.x = bird.x - 20;
