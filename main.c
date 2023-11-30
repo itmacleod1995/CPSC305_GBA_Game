@@ -16,6 +16,7 @@
 
 //#include "sprites.h"
 
+//sprites the program uses
 #include "upside_down.h"
 
 /* include the tile map we are using */
@@ -343,9 +344,6 @@ struct Bird {
     /* the animation counter counts how many frames until we flip */
     int counter;
 
-    /* whether the bird is moving right now or not */
-   // int move;
-
     /* Checks if there is a collision */
     int collision;
 
@@ -363,7 +361,6 @@ void bird_init(struct Bird* bird) {
     bird->y = 70;
     bird->yvel = 0;
     bird->gravity = 50;
-    //bird->move = 0;
     bird->counter = 0;
     bird->collision = 0;
     bird->sprite = sprite_init(bird->x, bird->y, SIZE_16_16, 0, 0, 0, 0);
@@ -423,22 +420,6 @@ void pipe_init9(struct Pipe* pipe){
     pipe->sprite = sprite_init(pipe->x, pipe->y, SIZE_16_32, 0,0,48,0);
 }
 
-
-/*
-int bird_right(struct Bird* bird) {
-    // face right 
-    if(bird->collision == 1){
-        bird->move = 0;
-        return 0;
-    }
-    bird->move = 1;
-
-    //bird->x++;
-    return 0;
-
-}
-*/
-
 /** Move bird down */
 void bird_down(struct Bird* bird){
    // bird->move = 1;
@@ -484,10 +465,10 @@ void pipe_scroll(struct Pipe* pipe){
 
 /* Checks if bird collides with pipe sprites */
 int collision(struct Bird* bird, struct Pipe* pipe){
-    //if the bird collides with a pipe (pipe->x - 16 is the left side of the pipe, pipe->y - 8 
+    //if the bird collides with a pipe (pipe->x - 16 is the left side of the pipe minus the birds width) 
     if(bird->x == pipe->x - 16 && bird->y >= pipe->y - 8){
-        if(pipe->y == 0 || pipe->y == 28){ //if the pipe is upside down (aka y == 0)
-            if(bird->y <= 50){
+        if(pipe->y == 0 || pipe->y == 28){ //if the pipe is upside down (aka y == 0 or the pipe is upside down and stacked on another upside down pipe)
+            if(bird->y <= 50){ //collides with pipe
                 bird->collision = 1;
                 bird_stop(bird);
                 return 1;
@@ -556,37 +537,36 @@ int main() {
     /* set initial scroll to 0 */
     int xscroll = 0;
 
-    int collisions = 0;
+    int collisions = 0; //keep track of number of collisions
 
     /* loop forever */
     while (1) {
         /* update the bird */
         bird_update(&bird, xscroll);
         
-        int num_of_collisions = inc_collision(collisions);
+        int num_of_collisions = inc_collision(collisions); //calls assembly func to increment collision counter
         
-        /* now the arrow keys move the bird */
+        /* now the arrow keys move the bird within screen bounds */
         if (button_pressed(BUTTON_UP)&&bird.y>0) {
             bird_up(&bird);            
 
         } else if (button_pressed(BUTTON_DOWN)&&bird.y<144) {            
             bird_down(&bird);
            
-        } /*else {
-            bird_stop(&bird);
-        }*/
-
+        }
         xscroll++;
 
+        //check for collisions on any of the pipes
         if(collision(&bird, &pipe2) || collision(&bird, &pipe3) || collision(&bird, &pipe4) || collision(&bird, &pipe5) || collision(&bird, &pipe6) || collision(&bird, &pipe7)
           || collision(&bird, &pipe8) || collision(&bird, &pipe9)){
             if(num_of_collisions == 5){
                 bird_stop(&bird);
                 bird.x = 120;
                 bird.y = 70;
+                num_of_collisions = 0; //reset collision counter
             }else {
                 bird_stop(&bird);
-                bird.x = bird.x - 10;
+                bird.x = bird.x - 20;
                 collisions++;
             }
             //bird_stop(&bird);
