@@ -3,8 +3,25 @@
  * contains C code for Flappy GBA project
  */
 
+#include <stdio.h> 
+#include <stdlib.h>
+
 #define SCREEN_WIDTH 240
 #define SCREEN_HEIGHT 160
+//limit to the random number generated to move pipes up and down
+#define RANDOM_LIMIT 40
+//size of the gap between pipes for the bird to fly through
+#define PIPE_GAP 45
+//length of pipe
+#define PIPE_LENGTH 28
+//index in the sprite map to the top end pipe
+#define TOP_END 48
+//index to the bottom end pipe
+#define BOTTOM_END 8
+//index to the top middle pipe
+#define TOP_MIDDLE 40
+//index to the bottom middle pipe
+#define BOTTOM_MIDDLE 12
 
 /* include the background image we are using */
 #include "background.h"
@@ -16,7 +33,6 @@
 
 //#include "sprites.h"
 
-//sprites the program uses
 #include "upside_down.h"
 
 /* include the tile map we are using */
@@ -344,6 +360,9 @@ struct Bird {
     /* the animation counter counts how many frames until we flip */
     int counter;
 
+    /* whether the bird is moving right now or not */
+   // int move;
+
     /* Checks if there is a collision */
     int collision;
 
@@ -361,64 +380,12 @@ void bird_init(struct Bird* bird) {
     bird->y = 70;
     bird->yvel = 0;
     bird->gravity = 50;
+    //bird->move = 0;
     bird->counter = 0;
     bird->collision = 0;
     bird->sprite = sprite_init(bird->x, bird->y, SIZE_16_16, 0, 0, 0, 0);
 }
 
-/** Pipe initializations **/
-void pipe_init2(struct Pipe* pipe){
-    pipe->x = 60;
-    pipe->y = 128;
-    pipe->sprite = sprite_init(pipe->x, pipe->y, SIZE_16_32, 0, 0, 12, 0);
-
-}
-
-void pipe_init3(struct Pipe* pipe){
-    pipe->x = 60;
-    pipe->y = 100;
-    pipe->sprite = sprite_init(pipe->x, pipe->y, SIZE_16_32, 0,0,8,0);
-
-}
-
-void pipe_init4(struct Pipe* pipe){
-    pipe->x = 100;
-    pipe->y = 0;
-    pipe->sprite = sprite_init(pipe->x, pipe->y, SIZE_16_32, 0,0,48,0);
-}
-
-
-void pipe_init5(struct Pipe* pipe){
-    pipe->x = 100;
-    pipe->y = 128;
-    pipe->sprite = sprite_init(pipe->x, pipe->y, SIZE_16_32, 0,0,12,0);
-
-
-}
-
-void pipe_init6(struct Pipe* pipe){
-    pipe->x = 100;
-    pipe->y = 100;
-    pipe->sprite = sprite_init(pipe->x, pipe->y, SIZE_16_32, 0,0,12,0);
-}
-
-void pipe_init7(struct Pipe* pipe){
-    pipe->x = 100;
-    pipe->y = 72;
-    pipe->sprite = sprite_init(pipe->x, pipe->y, SIZE_16_32, 0,0,8,0);
-}
-
-void pipe_init8(struct Pipe* pipe){
-    pipe->x = 60;
-    pipe->y = 0;
-    pipe->sprite = sprite_init(pipe->x, pipe->y, SIZE_16_32, 0,0,40,0);
-}
-
-void pipe_init9(struct Pipe* pipe){
-    pipe->x = 60;
-    pipe->y = 28;
-    pipe->sprite = sprite_init(pipe->x, pipe->y, SIZE_16_32, 0,0,48,0);
-}
 
 /** Move bird down */
 void bird_down(struct Bird* bird){
@@ -453,45 +420,31 @@ void bird_update(struct Bird* bird, int xscroll) {
     sprite_position(bird->sprite, bird->x, bird->y);
 }
 
+/* ASSEMBLY FUNCTIONS*/
+int inc_collision(int collisions);
+int apipeScroll(int x);
+
+
 /* Pipe scrolls with background */
 void pipe_scroll(struct Pipe* pipe){
-    pipe->x--;
-    if(pipe->x < 0){
-        pipe->x = 240;
-    }
+    pipe->x=apipeScroll(pipe->x);
     sprite_position(pipe->sprite, pipe->x, pipe->y);
 
 }
 
 /* Checks if bird collides with pipe sprites */
-int collision(struct Bird* bird, struct Pipe* pipe){
-    //if the bird collides with a pipe (pipe->x - 16 is the left side of the pipe minus the birds width) 
-    if(bird->x == pipe->x - 16 && bird->y >= pipe->y - 8){
-        if(pipe->y == 0 || pipe->y == 28){ //if the pipe is upside down (aka y == 0 or the pipe is upside down and stacked on another upside down pipe)
-            if(bird->y <= 50){ //collides with pipe
-                bird->collision = 1;
-                bird_stop(bird);
-                return 1;
-            }else {
-                bird->collision = 0;
-                return 0;
-            }
-        }
-        bird->collision = 1;
-        bird_stop(bird);
+int collision(struct Bird* bird, struct Pipe* bottom_pipe, struct Pipe* top_pipe){
+    //if the bird is below the bottom pipe or above the top pipe
+    if(bird->y+16 > bottom_pipe->y || bird->y < top_pipe->y + PIPE_LENGTH){
+        //return 1 for collision
         return 1;
-    }else {
-        bird->collision = 0;
-        return 0;
     }
-
+    else{return 0;}
 }
-
-/* Assembly function that keeps track of amount of collisions the bird has; if 5 collisions, bird is recentered on screen*/
-int inc_collision(int collisions);
 
 /* the main function */
 int main() {
+    
     /* we set the mode to mode 0 with bg0 on */
     *display_control = MODE0 | BG1_ENABLE | SPRITE_ENABLE | SPRITE_MAP_1D;
 
@@ -510,88 +463,98 @@ int main() {
 
     /* create the pipes */
 
-    struct Pipe pipe2;
-    pipe_init2(&pipe2);
+  /** Pipe initializations **/
 
-    struct Pipe pipe3;
-    pipe_init3(&pipe3);
+    //start with the top most pipe and work our way down
+    struct Pipe pipe1_top_middle;
+    pipe1_top_middle.x = 0;
+    pipe1_top_middle.y = 0;
+    pipe1_top_middle.sprite = sprite_init(pipe1_top_middle.x, pipe1_top_middle.y, SIZE_16_32, 0,0,TOP_MIDDLE,0);
 
-    struct Pipe pipe4;
-    pipe_init4(&pipe4);
-
-    struct Pipe pipe5;
-    pipe_init5(&pipe5);
-
-    struct Pipe pipe6;
-    pipe_init6(&pipe6);
-
-    struct Pipe pipe7;
-    pipe_init7(&pipe7);
-
-    struct Pipe pipe8;
-    pipe_init8(&pipe8);
-
-    struct Pipe pipe9;
-    pipe_init9(&pipe9);
+    struct Pipe top_middle2;
+    struct Pipe pipe1_top_end;
+    struct Pipe pipe1_bottom_end;    
+    struct Pipe bottom_middle2;
+    struct Pipe pipe1_bottom_middle;
 
     /* set initial scroll to 0 */
     int xscroll = 0;
 
-    int collisions = 0; //keep track of number of collisions
+    int collisions = 0;
 
     /* loop forever */
     while (1) {
         /* update the bird */
         bird_update(&bird, xscroll);
-        
-        int num_of_collisions = inc_collision(collisions); //calls assembly func to increment collision counter
-        
-        /* now the arrow keys move the bird within screen bounds */
+
+        //int num_of_collisions = inc_collision(collisions);
+
+        /* now the arrow keys move the bird */
         if (button_pressed(BUTTON_UP)&&bird.y>0) {
             bird_up(&bird);            
 
         } else if (button_pressed(BUTTON_DOWN)&&bird.y<144) {            
             bird_down(&bird);
-           
-        }
+
+        } /*else {
+            bird_stop(&bird);
+        }*/
+
         xscroll++;
-
-        //check for collisions on any of the pipes
-        if(collision(&bird, &pipe2) || collision(&bird, &pipe3) || collision(&bird, &pipe4) || collision(&bird, &pipe5) || collision(&bird, &pipe6) || collision(&bird, &pipe7)
-          || collision(&bird, &pipe8) || collision(&bird, &pipe9)){
-            if(num_of_collisions == 5){
-                bird_stop(&bird);
-                bird.x = 120;
-                bird.y = 70;
-                collisions = 0; //reset collision counter
-            }else {
-                bird_stop(&bird);
-                bird.x = bird.x - 20;
-                collisions++;
+        //if the bird is at the x of the pipe
+        if(bird.x+16==pipe1_bottom_end.x){
+            //check if the bird hit
+            if(collision(&bird,&pipe1_bottom_end,&pipe1_top_end)){
+                //if the bird has hit 5 times game over, reset bird to middle
+                 if(collisions == 5){
+                    bird.x = 120;
+                    bird.y = 70;
+                }else {
+                    bird.x = bird.x - 10;
+                    collisions = inc_collision(collisions);
+                }      
+            
             }
-            //bird_stop(&bird);
-            //bird.x = bird.x - 10;
-            //bird.y = 70;
         }
 
 
-        //pipe_scroll(&pipe);    
-        pipe_scroll(&pipe2);
-        pipe_scroll(&pipe3);
-        pipe_scroll(&pipe4);
-        pipe_scroll(&pipe5);
-        pipe_scroll(&pipe6);
-        pipe_scroll(&pipe7);
-        pipe_scroll(&pipe8);
-        pipe_scroll(&pipe9);
+        pipe_scroll(&pipe1_top_end);
+        pipe_scroll(&pipe1_bottom_end);
+        pipe_scroll(&pipe1_top_middle);
+        pipe_scroll(&pipe1_bottom_middle);
+        pipe_scroll(&top_middle2);
+        pipe_scroll(&bottom_middle2);
+
+        if(pipe1_top_middle.x==240){
+          int random_num = rand() % (RANDOM_LIMIT+1);
+          pipe1_top_end.x = pipe1_top_middle.x;
+          pipe1_top_end.y = pipe1_top_middle.y +8  + random_num;
+          pipe1_top_end.sprite = sprite_init(pipe1_top_end.x, pipe1_top_end.y, SIZE_16_32, 0,0,TOP_END,0);
+
+          top_middle2.x = pipe1_top_middle.x;
+          top_middle2.y = pipe1_top_end.y - PIPE_LENGTH;
+          top_middle2.sprite = sprite_init(top_middle2.x, top_middle2.y, SIZE_16_32, 0,0,TOP_MIDDLE,0);
+
+          pipe1_bottom_end.x = pipe1_top_end.x;
+          pipe1_bottom_end.y = pipe1_top_end.y + PIPE_LENGTH + PIPE_GAP;
+          pipe1_bottom_end.sprite = sprite_init(pipe1_bottom_end.x, pipe1_bottom_end.y,SIZE_16_32,0,0,BOTTOM_END, 0);
+
+          bottom_middle2.x = pipe1_bottom_end.x;
+          bottom_middle2.y = pipe1_bottom_end.y + PIPE_LENGTH;
+          bottom_middle2.sprite = sprite_init(bottom_middle2.x, bottom_middle2.y, SIZE_16_32, 0,0,BOTTOM_MIDDLE,0);
+
+          pipe1_bottom_middle.x = pipe1_bottom_end.x;
+          pipe1_bottom_middle.y = SCREEN_HEIGHT-PIPE_LENGTH;
+          pipe1_bottom_middle.sprite = sprite_init(pipe1_bottom_middle.x, pipe1_bottom_middle.y, SIZE_16_32, 0,0,BOTTOM_MIDDLE,0);
+        }
+      
         /* wait for vblank before scrolling and moving sprites */
         wait_vblank();
         *bg0_x_scroll = xscroll;
-        *bg1_x_scroll = xscroll * 1.5;
+        *bg1_x_scroll = xscroll * .5;
         sprite_update_all();
 
         /* delay some */
         delay(300);
     }
 }
-
