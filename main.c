@@ -461,21 +461,25 @@ int main() {
     struct Bird bird;
     bird_init(&bird);
 
-    /* create the pipes */
-
-  /** Pipe initializations **/
-
-    //start with the top most pipe and work our way down
+    //initialize pipes and their sprites
     struct Pipe pipe1_top_middle;
     pipe1_top_middle.x = 0;
     pipe1_top_middle.y = 0;
     pipe1_top_middle.sprite = sprite_init(pipe1_top_middle.x, pipe1_top_middle.y, SIZE_16_32, 0,0,TOP_MIDDLE,0);
 
-    struct Pipe top_middle2;
+    struct Pipe top_middle2;   
     struct Pipe pipe1_top_end;
     struct Pipe pipe1_bottom_end;    
     struct Pipe bottom_middle2;
     struct Pipe pipe1_bottom_middle;
+
+
+    pipe1_bottom_end.sprite = sprite_init(pipe1_bottom_end.x, pipe1_bottom_end.y,SIZE_16_32,0,0,BOTTOM_END, 0);
+    pipe1_top_end.sprite = sprite_init(pipe1_top_end.x, pipe1_top_end.y, SIZE_16_32, 0,0,TOP_END,0);
+    top_middle2.sprite = sprite_init(top_middle2.x, top_middle2.y, SIZE_16_32, 0,0,TOP_MIDDLE,0);
+    bottom_middle2.sprite = sprite_init(bottom_middle2.x, bottom_middle2.y, SIZE_16_32, 0,0,BOTTOM_MIDDLE,0);
+    pipe1_bottom_middle.sprite = sprite_init(pipe1_bottom_middle.x, pipe1_bottom_middle.y, SIZE_16_32, 0,0,BOTTOM_MIDDLE,0);
+
 
     /* set initial scroll to 0 */
     int xscroll = 0;
@@ -487,7 +491,6 @@ int main() {
         /* update the bird */
         bird_update(&bird, xscroll);
 
-        //int num_of_collisions = inc_collision(collisions);
 
         /* now the arrow keys move the bird */
         if (button_pressed(BUTTON_UP)&&bird.y>0) {
@@ -496,9 +499,7 @@ int main() {
         } else if (button_pressed(BUTTON_DOWN)&&bird.y<144) {            
             bird_down(&bird);
 
-        } /*else {
-            bird_stop(&bird);
-        }*/
+        } 
 
         xscroll++;
         //if the bird is at the x of the pipe
@@ -517,7 +518,7 @@ int main() {
             }
         }
 
-
+        //scroll all of the pipes
         pipe_scroll(&pipe1_top_end);
         pipe_scroll(&pipe1_bottom_end);
         pipe_scroll(&pipe1_top_middle);
@@ -525,28 +526,25 @@ int main() {
         pipe_scroll(&top_middle2);
         pipe_scroll(&bottom_middle2);
 
+        //reset the pipes in a random location
         if(pipe1_top_middle.x==240){
           int random_num = rand() % (RANDOM_LIMIT+1);
           pipe1_top_end.x = pipe1_top_middle.x;
-          pipe1_top_end.y = pipe1_top_middle.y +8  + random_num;
-          pipe1_top_end.sprite = sprite_init(pipe1_top_end.x, pipe1_top_end.y, SIZE_16_32, 0,0,TOP_END,0);
-
+          pipe1_top_end.y = pipe1_top_middle.y +8  + random_num;//add random number
+            //all pipes below are relative to the random one
           top_middle2.x = pipe1_top_middle.x;
           top_middle2.y = pipe1_top_end.y - PIPE_LENGTH;
-          top_middle2.sprite = sprite_init(top_middle2.x, top_middle2.y, SIZE_16_32, 0,0,TOP_MIDDLE,0);
 
           pipe1_bottom_end.x = pipe1_top_end.x;
           pipe1_bottom_end.y = pipe1_top_end.y + PIPE_LENGTH + PIPE_GAP;
-          pipe1_bottom_end.sprite = sprite_init(pipe1_bottom_end.x, pipe1_bottom_end.y,SIZE_16_32,0,0,BOTTOM_END, 0);
 
           bottom_middle2.x = pipe1_bottom_end.x;
           bottom_middle2.y = pipe1_bottom_end.y + PIPE_LENGTH;
-          bottom_middle2.sprite = sprite_init(bottom_middle2.x, bottom_middle2.y, SIZE_16_32, 0,0,BOTTOM_MIDDLE,0);
-
+          
           pipe1_bottom_middle.x = pipe1_bottom_end.x;
           pipe1_bottom_middle.y = SCREEN_HEIGHT-PIPE_LENGTH;
-          pipe1_bottom_middle.sprite = sprite_init(pipe1_bottom_middle.x, pipe1_bottom_middle.y, SIZE_16_32, 0,0,BOTTOM_MIDDLE,0);
-        }
+          
+       }
       
         /* wait for vblank before scrolling and moving sprites */
         wait_vblank();
